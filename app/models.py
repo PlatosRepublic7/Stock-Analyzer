@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, ForeignKey
-from sqlalchemy.orm import sessionmaker, relationship, Mapped, mapped_column, DeclarativeBase
+from sqlalchemy import Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, DeclarativeBase
 from datetime import datetime, timezone
 
 # Base model for class definitions
@@ -26,6 +26,8 @@ class Quote(Base):
     symbol_id = mapped_column(Integer, ForeignKey('symbols.id', ondelete='CASCADE'))
     symbol = relationship("Symbol", back_populates="quotes")
     current_price =  mapped_column(Float)
+    change = mapped_column(Float, nullable=True)
+    percent_change = mapped_column(Float, nullable=True)
     high_price = mapped_column(Float)
     low_price = mapped_column(Float)
     open_price = mapped_column(Float)

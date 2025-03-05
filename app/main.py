@@ -10,7 +10,16 @@ def init_db():
     Base.metadata.create_all(bind=engine)
 
 def fetch_and_store(session):
-    store_stock_quote(session, "AAPL")
+    try:
+        with open('symbols_master_list.txt') as f:
+            file_lines = f.readlines()
+            for line in file_lines:
+                company_symbol_list = line.split('-')
+                symbol = company_symbol_list[1].strip()
+                store_stock_quote(session, symbol)
+        f.close()
+    except Exception as e:
+        print(f'File Parsing Error: {e}')
 
 
 if __name__ == '__main__':

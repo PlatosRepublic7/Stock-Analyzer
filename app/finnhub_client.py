@@ -1,8 +1,8 @@
 import requests
-from datetime import datetime
 from models import Symbol, Quote
-from dotenv import load_dotenv
 import os
+
+from datetime import datetime, timezone
 
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
@@ -31,11 +31,15 @@ def get_or_create_symbol(session, symbol_str):
                     type = result['type']
                     break
         
-        # Create a new Symbol object
-        symbol_obj = Symbol(symbol=symbol_str, description=description, display_symbol=display_symbol, type=type)
-        session.add(symbol_obj)
-        session.commit()
-        session.refresh(symbol_obj)
+        try:
+            # Create a new Symbol object
+            symbol_obj = Symbol(symbol=symbol_str, description=description, display_symbol=display_symbol, type=type)
+            session.add(symbol_obj)
+            session.commit()
+            session.refresh(symbol_obj)
+        except Exception as e:
+            session.rollback()
+            print(f"Error storing new Symbol {symbol_str}: {e}")
         return symbol_obj, True
 
 
@@ -50,13 +54,13 @@ def store_stock_quote(session, symbol):
     data = get_stock_quote(symbol)
     symbol_obj, created = get_or_create_symbol(session, symbol)
     if created:
-        print(f"Created a New Symbol: {symbol_obj.symbol} with id {symbol_obj.id}")
+        print(f"\nCreated a New Symbol: {symbol_obj.symbol} with id {symbol_obj.id}")
     else:
-        print(f"Found existing Symbol: {symbol_obj.symbol} with id {symbol_obj.id}")
+        print(f"\nFound existing Symbol: {symbol_obj.symbol} with id {symbol_obj.id}")
 
     try:
         # data['c'] represents the current price
-        price = data.get('c')
+        current_price = data.get('c')
         change = data.get('d')
         percent_change = data.get('dp')
         high_price = data.get('h')
@@ -67,7 +71,9 @@ def store_stock_quote(session, symbol):
 
         new_quote = Quote(
             symbol_id=symbol_obj.id,
-            current_price=price,
+            current_price=current_price,
+            change=change,
+            percent_change=percent_change,
             high_price=high_price,
             low_price=low_price,
             open_price=open_price,
@@ -76,7 +82,7 @@ def store_stock_quote(session, symbol):
         )
         session.add(new_quote)
         session.commit()
-        print(f"Stored {symbol}:\nCurrent Price:{price}\nHigh Price:{high_price}\nLow Price:{low_price}\nOpen Price:{open_price}\nPrevious Close:{previous_close}")
+        print(f"\nStored Quote for {symbol} at {datetime.now(timezone.utc)} with id {new_quote.id}:\nCurrent Price: {current_price}\nChange: {change}\nPercent Change: {percent_change}\nHigh Price: {high_price}\nLow Price: {low_price}\nOpen Price: {open_price}\nPrevious Close: {previous_close}")
     except Exception as e:
         session.rollback()
         print(f"Error storing data for {symbol}: {e}")

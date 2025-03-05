@@ -1,0 +1,30 @@
+3M Company - MMM
+American Express Company - AXP
+Amgen Inc. - AMGN
+Apple Inc. - AAPL
+The Boeing Company - BA
+Caterpillar Inc. - CAT
+Chevron Corporation - CVX
+Cisco Systems, Inc. - CSCO
+The Coca‑Cola Company - KO
+Amazon.com, Inc. - AMZN
+The Goldman Sachs Group, Inc. - GS
+The Home Depot, Inc. - HD
+Honeywell International Inc. - HON
+International Business Machines Corporation - IBM
+Johnson & Johnson - JNJ
+JPMorgan Chase & Co. - JPM
+McDonald’s Corporation - MCD
+Merck & Co., Inc. - MRK
+Microsoft Corporation - MSFT
+Nike, Inc. - NKE
+Nvidia Corporation - NVDA
+Procter & Gamble - PG
+Salesforce, Inc. - CRM
+The Travelers Companies, Inc. - TRV
+UnitedHealth Group Incorporated - UNH
+Verizon Communications Inc. - VZ
+Visa Inc. - V
+Walmart Inc. - WMT
+The Walt Disney Company - DIS
+Sherwin‑Williams Co. - SHW

@@ -133,8 +133,10 @@ def store_av_time_series_ohlcv(session, symbol):
                 session.add(av_quote)
                 session.commit()
                 print(f'\nStored AlphaVantage Quote for {symbol} at {datetime.now(timezone.utc)} with id {av_quote.id}:\nOpen: {open}\nHigh: {high}\nLow: {low}\nClose: {close}\nVolume: {volume}\n')
-
+            else:
+                break
     except Exception as e:
+        session.rollback()
         print(f'Error storing data for {symbol}: {e}')
     finally:
         session.close()

@@ -1,5 +1,5 @@
 import requests
-from models import Symbol, Quote
+from models import Symbol, Quote, AlphaVantageQuote
 import os
 
 from datetime import datetime, timezone
@@ -7,6 +7,9 @@ from datetime import datetime, timezone
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 FINNHUB_URL = "https://finnhub.io/api/v1/"
+
+ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
+ALPHA_VANTAGE_URL = "https://www.alphavantage.co/"
 
 
 def get_or_create_symbol(session, symbol_str):
@@ -89,3 +92,49 @@ def store_stock_quote(session, symbol):
     finally:
         session.close()
 
+
+def get_av_time_series_data(symbol):
+    params = {"function": "TIME_SERIES_DAILY", "symbol": symbol, "apikey": ALPHA_VANTAGE_API_KEY}
+    response = requests.get(ALPHA_VANTAGE_URL + "query", params=params)
+    response.raise_for_status()
+    return response.json()
+
+
+def store_av_time_series_ohlcv(session, symbol):
+    symbol_obj, created = get_or_create_symbol(session, symbol)
+    if created:
+        print(f"\nCreated a New Symbol: {symbol_obj.symbol} - {symbol_obj.description} with id {symbol_obj.id}")
+    else:
+        print(f"\nFound existing Symbol: {symbol_obj.symbol} - {symbol_obj.description} with id {symbol_obj.id}")
+
+    data = get_av_time_series_data(symbol)
+    try:
+        time_series_data = data.get('Time Series (Daily)')
+        for key, value in time_series_data.items():
+            open = value['1. open']
+            high = value['2. high']
+            low = value['3. low']
+            close = value['4. close']
+            volume = value['5. volume']
+            date = key
+
+            av_obj = session.query(AlphaVantageQuote).filter_by(date=date).first()
+            if not av_obj:
+                av_quote = AlphaVantageQuote(
+                    symbol_id=symbol_obj.id,
+                    open=open,
+                    high=high,
+                    low=low,
+                    close=close,
+                    volume=volume,
+                    date=date
+                )
+
+                session.add(av_quote)
+                session.commit()
+                print(f'\nStored AlphaVantage Quote for {symbol} at {datetime.now(timezone.utc)} with id {av_quote.id}:\nOpen: {open}\nHigh: {high}\nLow: {low}\nClose: {close}\nVolume: {volume}\n')
+
+    except Exception as e:
+        print(f'Error storing data for {symbol}: {e}')
+    finally:
+        session.close()

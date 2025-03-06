@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy import Integer, String, DateTime, Date, Float, ForeignKey
 from sqlalchemy.orm import relationship, mapped_column, DeclarativeBase
 from datetime import datetime, timezone
 
@@ -18,6 +18,7 @@ class Symbol(Base):
     updated_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     deleted_at = mapped_column(DateTime, nullable=True)
     quotes = relationship("Quote", back_populates="symbol", cascade="all, delete", passive_deletes=True)
+    alpha_vantage_quotes = relationship("AlphaVantageQuote", back_populates="symbol", cascade="all, delete", passive_deletes=True)
 
 
 class Quote(Base):
@@ -36,3 +37,18 @@ class Quote(Base):
     created_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     deleted_at = mapped_column(DateTime, nullable=True)
+
+
+class AlphaVantageQuote(Base):
+    __tablename__ = 'alpha_vantage_quotes'
+    id = mapped_column(Integer, primary_key=True, index=True)
+    symbol_id = mapped_column(Integer, ForeignKey('symbols.id', ondelete='CASCADE'))
+    symbol = relationship("Symbol", back_populates="alpha_vantage_quotes")
+    open = mapped_column(Float, nullable=True)
+    high = mapped_column(Float, nullable=True)
+    low = mapped_column(Float, nullable=True)
+    close = mapped_column(Float, nullable=True)
+    volume = mapped_column(Integer, nullable=True)
+    date = mapped_column(Date, nullable=True)
+    created_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

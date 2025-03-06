@@ -2,7 +2,7 @@ from database import SessionLocal, engine
 from models import Base
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from finnhub_client import store_stock_quote
+from api_client import store_stock_quote, store_av_time_series_ohlcv
 
 
 def init_db():
@@ -16,7 +16,8 @@ def fetch_and_store(session):
             for line in file_lines:
                 company_symbol_list = line.split('-')
                 symbol = company_symbol_list[1].strip()
-                store_stock_quote(session, symbol)
+                #store_stock_quote(session, symbol)
+                store_av_time_series_ohlcv(session, symbol)
         f.close()
     except Exception as e:
         print(f'File Parsing Error: {e}')

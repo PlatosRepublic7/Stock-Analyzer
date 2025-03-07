@@ -1,5 +1,5 @@
 import requests
-from models import Symbol, Quote, AlphaVantageQuote
+from database.models import Symbol, Quote, AlphaVantageQuote
 import os
 
 from datetime import datetime, timezone
@@ -13,6 +13,10 @@ ALPHA_VANTAGE_URL = "https://www.alphavantage.co/"
 
 
 def get_or_create_symbol(session, symbol_str):
+    '''
+    This checks for a given symbol_str within the database, if it doesn't find it, it creates a new
+    Symbol object, and returns it. Otherwise it returns the found Symbol object.
+    '''
     symbol_obj = session.query(Symbol).filter_by(symbol=symbol_str).first()
     if symbol_obj:
         # Found an existing symbol
@@ -101,6 +105,10 @@ def get_av_time_series_data(symbol):
 
 
 def store_av_time_series_ohlcv(session, symbol):
+    '''
+    Access the AlphaVantage API and get Daily Time-Series data for 'symbol'. This will collect the
+    data and store it in the database.
+    '''
     symbol_obj, created = get_or_create_symbol(session, symbol)
     if created:
         print(f"\nCreated a New Symbol: {symbol_obj.symbol} - {symbol_obj.description} with id {symbol_obj.id}")
@@ -134,6 +142,7 @@ def store_av_time_series_ohlcv(session, symbol):
                 session.commit()
                 print(f'\nStored AlphaVantage Quote for {symbol} at {datetime.now(timezone.utc)} with id {av_quote.id}:\nOpen: {open}\nHigh: {high}\nLow: {low}\nClose: {close}\nVolume: {volume}\n')
             else:
+                print(f'\nCurrent AlphaVantage data is up to date for {symbol}\n')
                 break
     except Exception as e:
         session.rollback()

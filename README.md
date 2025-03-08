@@ -41,7 +41,7 @@ Stock-Analyzer is a simple web application designed to visualize Dow Jones Indus
     DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
     ```
 
-4. **Set up Alembic and migrate database models:** This project makes use of SQLAlchemy's ORM functionality, as well as Alembic for database migrations. In order to apply the current database schema, some preliminary setup for Alembic is required. Upon installing the requirements for this project, a file names `alembic.ini` will be created in the root directory. The only alteration to this file that is required is the following:
+4. **Set up Alembic and migrate database models:** This project makes use of SQLAlchemy's ORM functionality, as well as Alembic for database migrations. In order to apply the current database schema, some preliminary setup for Alembic is required. Upon installing the requirements for this project, a file named `alembic.ini` will be created in the root directory. The only alteration to this file that is required is the following:
     ```bash
     ...
     # the output encoding used when revision files
@@ -52,13 +52,13 @@ Stock-Analyzer is a simple web application designed to visualize Dow Jones Indus
     ```
 
 Once you have made this update, run the following commands to apply the initial migration:
-    ```bash
+    ```
     alembic revision --autogenerate -m "Initial migration"
     ```
-    ```bash
+    ```
     alembic upgrade head
     ```
-    
+
 
 ## Running the project
 

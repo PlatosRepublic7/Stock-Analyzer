@@ -1,4 +1,4 @@
-from database.models import Symbol, AlphaVantageQuote
+from app.db.models import Symbol, AlphaVantageQuote
 from .arima_model import ARIMAModel
 import pandas as pd
 

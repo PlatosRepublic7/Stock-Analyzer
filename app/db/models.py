@@ -21,6 +21,16 @@ class Symbol(Base):
     alpha_vantage_quotes = relationship("AlphaVantageQuote", back_populates="symbol", cascade="all, delete", passive_deletes=True)
 
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'symbol': self.symbol,
+            'description': self.description,
+            'display_symbol': self.display_symbol,
+            'type': self.type
+        }
+
+
 class Quote(Base):
     __tablename__ = "quotes"
     id = mapped_column(Integer, primary_key=True, index=True)
@@ -52,3 +62,16 @@ class AlphaVantageQuote(Base):
     date = mapped_column(Date, nullable=True)
     created_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'symbol_id': self.symbol_id,
+            'open': self.open,
+            'high': self.high,
+            'low': self.low,
+            'close': self.close,
+            'volume': self.volume,
+            'date': self.date
+        }

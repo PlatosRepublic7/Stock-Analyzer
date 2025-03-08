@@ -1,5 +1,5 @@
 import requests
-from database.models import Symbol, Quote, AlphaVantageQuote
+from app.db.models import Symbol, Quote, AlphaVantageQuote
 import os
 
 from datetime import datetime, timezone
